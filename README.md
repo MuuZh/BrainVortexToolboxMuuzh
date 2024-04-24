@@ -1,4 +1,4 @@
-# BrainVortexToolboxMuuzh-main
+# BrainVortexToolboxMuuzh
 
 Basicly [BrainVortexToolbox](https://github.com/BrainDynamicsUSYD/BrainVortexToolbox) with some modifications to make life easier.
 
