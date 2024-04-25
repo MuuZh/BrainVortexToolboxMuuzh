@@ -1,22 +1,44 @@
 function paths = get_spiral_detected_path(func, group)
 
-    if strcmpi(func, "LSD")
-        datapath = "E:\resarch_data\fMRI\fMRI_LSD\Spiral Detected";
-        fnformat = "Spiral_detected_surfilt_%s_LEFT_S%02d.mat";
+    keys =["LSD_LSD", "LSD_PCB", "DMT_DMT", "DMT_PCB"];
 
-    end
+    data_paths = ["E:\resarch_data\fMRI\fMRI_LSD\Spiral Detected";
+                "E:\resarch_data\fMRI\fMRI_DMT\Spiral Detected";
+                "not yet";
+                "not yet"
+                ];
 
-    if strcmpi(group, "LSD")
-        group = "LSD";
-        id = 1:14;
-    elseif strcmpi(group, "PCB")
-        group = "PCB";
-        id = 1:14;
-    end
+    fn_formats = ["Spiral_detected_surfilt_LSD_LEFT_S%02d.mat"; 
+                "Spiral_detected_surfilt_PCB_LEFT_S%02d.mat";
+                "not yet";
+                "not yet"
+                ];
 
-    paths = arrayfun(@(x) ...
-        fullfile(datapath,sprintf(fnformat, group, x)), ...
-        id, 'UniformOutput', false);
+    data_ids = {1:14; 1:14 ; NaN; NaN};
 
+    valueStructs = cellfun(@(path, format, ids) struct(...
+    'DataPath', path, ...
+    'FileNameFormat', format, ...
+    'DataID', ids), ...
+    data_paths, fn_formats, data_ids, 'UniformOutput', false);
+
+    values = containers.Map(keys, valueStructs);
     
+    keyToLookup = upper(sprintf('%s_%s', func, group));
+
+    if isKey(values, keyToLookup)
+        data = values(keyToLookup);
+        if ~isempty(data.DataPath)
+            % fprintf('Data Path: %s\n', data.DataPath);
+            % fprintf('File Name Format: %s\n', data.FileNameFormat);
+            % fprintf('Data ID Range: %s\n', mat2str(data.DataID));
+
+            paths = arrayfun(@(id) fullfile(data.DataPath, sprintf(data.FileNameFormat, id)), data.DataID, 'UniformOutput', false);
+        else
+            disp('No data available for this key.');
+        end
+    else
+        disp('Key not found.');
+    end
+
 end
